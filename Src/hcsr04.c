@@ -1,8 +1,9 @@
-/*
+/**
  * hcsr04.c
  *
  *  Created on: Jan 8, 2020
- *      Author: Iga
+ *  @author Iga
+ *  @file HCSR04.c
  */
 #include "hcsr04.h"
 
@@ -12,6 +13,10 @@ static int counter1, counter2;
 static int not_detected_counter;
 static int detected_counter;
 
+/**
+ * Initializes the sensor
+ */
+
 void init_hcsr() {
 	startHcsr = 0;
 	counter1 = 0;
@@ -20,13 +25,24 @@ void init_hcsr() {
 	not_detected_counter = 0;
 }
 
+/**
+ * Getter for the value of the start signal
+ * @return start state
+ */
 int get_init_signal_state() {
 	return startHcsr;
 }
 
+/**
+ * Starts the init signal for the sensor
+ */
 void start_init_signal() {
 	startHcsr = 1;
 }
+
+/**
+ * Generates the init signal for the sensor
+ */
 
 void init_singal_step() {
 
@@ -38,6 +54,10 @@ void init_singal_step() {
 	}
 }
 
+/**
+ * Measures the distance between an object and the sensor
+ * writes it in counter2 and after 5 measurements without an object in range stops the lamp
+ * */
 void distance() {
 
 	GPIO_PinState current;
@@ -75,3 +95,4 @@ void distance() {
 	}
 	last = current;
 }
+

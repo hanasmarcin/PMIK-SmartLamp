@@ -1,11 +1,21 @@
-/*
+/**
  * apds_9930.c
  *
  *  Created on: Jan 2, 2020
- *      Author: Iga
+ *  @author Iga
+ *  @file APDS_9930.c
  */
 
 #include "apds_9930.h"
+
+
+/**
+ * Initializes APDS light sensor with default values
+ * @param i2c pointer to I2C handle
+ * @return ifSuccessful
+ */
+
+
 
 int APDS_init(I2C_HandleTypeDef *i2c) {
 
@@ -26,6 +36,11 @@ int APDS_init(I2C_HandleTypeDef *i2c) {
 	return 1 ;
 }
 
+/**
+ * Reads the value in register for channel Ch0 - measurement result
+ *  @param i2c pointer to I2C handle
+ *  @return measured value
+ */
 uint16_t ALS_readCh0(I2C_HandleTypeDef *i2c){
 
 	uint8_t CH0low, CH0high;
@@ -43,6 +58,11 @@ uint16_t ALS_readCh0(I2C_HandleTypeDef *i2c){
 
 
 }
+/**
+ * Reads the value in register for channel Ch01- measurement result
+ *  @param i2c pointer to I2C handle
+ *  @return measured value
+ */
 
 uint16_t ALS_readCh1(I2C_HandleTypeDef *i2c){
 
@@ -60,6 +80,12 @@ uint16_t ALS_readCh1(I2C_HandleTypeDef *i2c){
 
 
 }
+/**
+ * Function scales measured values to the range <0;1>, calculates the average and the illuminance to set
+ * @param result0 from channel 0
+ * @param result1 from channel 1
+ * @return illuminance to set
+ */
 
 float scale_results(uint16_t result0, uint16_t result1) {
 
@@ -75,6 +101,12 @@ float scale_results(uint16_t result0, uint16_t result1) {
 
 }
 
+/**
+ * Enables the APDS sensor in the ambient light mode
+ * @param i2c pointer to I2C handle
+ * @return ifSuccessful
+ */
+
 int APDS_enable(I2C_HandleTypeDef *i2c) {
 
 	uint8_t reg  ;
@@ -85,6 +117,12 @@ int APDS_enable(I2C_HandleTypeDef *i2c) {
 	return 0 ;
 }
 
+/**
+ * Disables the APDS sensor
+ * @param i2c pointer to I2C handle
+ * @return ifSuccessful
+ */
+
 int APDS_disable(I2C_HandleTypeDef *i2c) {
 	uint8_t reg  ;
 	if (HAL_I2C_IsDeviceReady(i2c,0x39<<1,3,HAL_MAX_DELAY) != HAL_OK) return -1 ;
@@ -93,6 +131,12 @@ int APDS_disable(I2C_HandleTypeDef *i2c) {
 	isEnabled = 0 ;
 	return 0 ;
 }
+
+/**
+ * Sets the integration time for ambient light in APDS
+ * @param i2c pointer to I2C handle
+ * @return ifSuccessful
+ */
 
 int set_ATIME(I2C_HandleTypeDef *i2c, uint8_t time) {
 
@@ -109,6 +153,13 @@ int set_ATIME(I2C_HandleTypeDef *i2c, uint8_t time) {
 	HAL_I2C_Mem_Write(i2c, 0x39<<1, 0x80 | ATIME, 1, (uint8_t*)&reg, sizeof(reg), HAL_MAX_DELAY);
 	return 0 ;
 }
+
+/**
+ * Sets the integration time for proximity measurement in APDS
+ * @param i2c pointer to I2C handle
+ * @return ifSuccessful
+ */
+
 int set_PTIME(I2C_HandleTypeDef *i2c){
 	uint8_t reg  ;
 		if (HAL_I2C_IsDeviceReady(i2c,0x39<<1,3,HAL_MAX_DELAY) != HAL_OK) return -1 ;
@@ -116,6 +167,14 @@ int set_PTIME(I2C_HandleTypeDef *i2c){
 		HAL_I2C_Mem_Write(i2c, 0x39<<1, 0x80 | PTIME, 1, (uint8_t*)&reg, sizeof(reg), HAL_MAX_DELAY);
 		return 0 ;
 }
+
+/**
+ * Sets the wait time in APDS
+ * @param i2c pointer to I2C handle
+ * @param time to set
+ * @return ifSuccessful
+ */
+
 int set_WTIME(I2C_HandleTypeDef *i2c, uint8_t time) {
 
 	uint8_t reg  ;
@@ -128,6 +187,17 @@ int set_WTIME(I2C_HandleTypeDef *i2c, uint8_t time) {
 	HAL_I2C_Mem_Write(i2c, 0x39<<1, 0x80 | WTIME, 1, (uint8_t*)&reg, sizeof(reg), HAL_MAX_DELAY);
 	return 0 ;
 }
+
+/*
+ * Sets the interrupt thresholds time for ambient light in APDS
+ * @param i2c pointer to I2C handle
+ * @param low1 threshold lower byte
+ * @param low2 threshold upper byte
+ * @param high1 threshold lower byte
+ * @param high2 threshold upper byte
+ * @return if successful
+ */
+
 
 int set_ALS_thresholds(I2C_HandleTypeDef *i2c,uint8_t low1,uint8_t low2,
 		uint8_t high1,uint8_t high2) {
@@ -146,6 +216,16 @@ int set_ALS_thresholds(I2C_HandleTypeDef *i2c,uint8_t low1,uint8_t low2,
 	return 0;
 }
 
+/*
+ * Sets the interrupt thresholds time for proximity in APDS
+ * @param i2c pointer to I2C handle
+ * @param low1 threshold lower byte
+ * @param low2 threshold upper byte
+ * @param high1 threshold lower byte
+ * @param high2 threshold upper byte
+ * @return if successful
+ */
+
 int set_PROX_thresholds(I2C_HandleTypeDef *i2c,uint8_t low1,uint8_t low2,
 		uint8_t high1,uint8_t high2) {
 
@@ -163,6 +243,13 @@ int set_PROX_thresholds(I2C_HandleTypeDef *i2c,uint8_t low1,uint8_t low2,
 	return 0;
 }
 
+/*
+ * Sets the interrupt persistance in APDS
+ * @param i2c pointer to I2C handle
+ * @param PPERS proximity persistence
+ * @param APERS ambient light persistence
+ * @return if successful
+ */
 int set_PERS(I2C_HandleTypeDef *i2c,uint8_t PPERS,uint8_t APERS) {
 
 	uint8_t reg ;
@@ -172,6 +259,12 @@ int set_PERS(I2C_HandleTypeDef *i2c,uint8_t PPERS,uint8_t APERS) {
 	return 0 ;
 }
 
+/*
+ * Sets the AGL bit
+ * @param i2c pointer to I2C handle
+ * @param enable
+ * @return if successful
+ */
 int set_AGL(I2C_HandleTypeDef *i2c, int enable) {
 	uint8_t reg = 0 ;
 	if (HAL_I2C_IsDeviceReady(i2c,0x39<<1,3,HAL_MAX_DELAY) != HAL_OK) return -1 ;
@@ -180,6 +273,13 @@ int set_AGL(I2C_HandleTypeDef *i2c, int enable) {
 	HAL_I2C_Mem_Write(i2c, 0x39<<1, 0x80 | CONFIG, 1, (uint8_t*)&reg, sizeof(reg), HAL_MAX_DELAY);
 	return 0 ;
 }
+
+/*
+ * Sets the WLONG bit for longer wait time
+ * @param i2c pointer to I2C handle
+ * @param enable
+ * @return if successful
+ */
 
 int set_WLONG(I2C_HandleTypeDef *i2c, int enable) {
 	uint8_t reg = 0 ;
@@ -190,6 +290,12 @@ int set_WLONG(I2C_HandleTypeDef *i2c, int enable) {
 	return 0 ;
 }
 
+/*
+ * Sets the PDL bit
+ * @param i2c pointer to I2C handle
+ * @param enable
+ * @return if successful
+ */
 int set_PDL(I2C_HandleTypeDef *i2c, int enable) {
 	uint8_t reg = 0;
 	if (HAL_I2C_IsDeviceReady(i2c,0x39<<1,3,HAL_MAX_DELAY) != HAL_OK) return -1 ;
@@ -199,6 +305,12 @@ int set_PDL(I2C_HandleTypeDef *i2c, int enable) {
 	return 0 ;
 }
 
+/*
+ * Sets the proximity pulse value
+ * @param i2c pointer to I2C handle
+ * @param pulse
+ * @return if successful
+ */
 int set_PPULSE(I2C_HandleTypeDef *i2c, uint8_t pulse){
 
 	uint8_t reg  ;
@@ -208,6 +320,12 @@ int set_PPULSE(I2C_HandleTypeDef *i2c, uint8_t pulse){
 	return 0 ;
 }
 
+/*
+ * Write the value to the Control register
+ * @param i2c pointer to I2C handle
+ * @param enable
+ * @return if successful
+ */
 int set_Control(I2C_HandleTypeDef *i2c, uint8_t PDRIVE,uint8_t PDIODE,
 		uint8_t PGAIN, uint8_t AGAIN) {
 
@@ -219,6 +337,13 @@ int set_Control(I2C_HandleTypeDef *i2c, uint8_t PDRIVE,uint8_t PDIODE,
 
 }
 
+/*
+ * Sets the proximity offset
+ * @param i2c pointer to I2C handle
+ * @param offset
+ * @return if successful
+ */
+
 int set_POFFSET(I2C_HandleTypeDef *i2c, uint8_t offset){
 
 	uint8_t reg  ;
@@ -229,6 +354,12 @@ int set_POFFSET(I2C_HandleTypeDef *i2c, uint8_t offset){
 
 }
 
+/*
+ * Reads the value in the Status register
+ * @param i2c pointer to I2C handle
+ * @return value of the register
+ */
+
 uint8_t read_status(I2C_HandleTypeDef *i2c){
 
 	uint8_t reg = 0x00;
@@ -237,3 +368,4 @@ uint8_t read_status(I2C_HandleTypeDef *i2c){
 	return reg ;
 
 }
+
