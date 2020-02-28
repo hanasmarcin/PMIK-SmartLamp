@@ -1,5 +1,4 @@
 # PMIK SmartLamp
-![](PMIK-SmartLamp-IMG.jpeg)
 
 The Lamp is designed and developed In C on STM32, RGB LEDs, illuminance and distance sensors and controlled with computer using UART communication.
 It can can work in three modes, that are chosen and configurated on the computer:
@@ -8,6 +7,8 @@ It can can work in three modes, that are chosen and configurated on the computer
 - **Color picker** - the lamp lights up in the color given in RGB format, a transition from the previous to the given color occurs smoothly at a specified time.
 
 The **illuminance sensor** changes brightness of the lamp (if it is working in rainbow or strobotron mode) and the **distance sensor** stops current mode and turns the light off, if a user has left the room.
+
+![](PMIK-SmartLamp-IMG.jpeg)
 
 The lamp consists of the following modules:
 - **STM32-NUCLEO** L476RG board
